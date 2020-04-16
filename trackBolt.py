@@ -20,10 +20,11 @@ def derivativeaffineWarp(pt):
     return dW
 
 def affineWarp(pt,params):
-    p = np.append(pt,1)
-    W = np.array([[1+params[0], params[2], params[4]],
-                  [params[1], 1+params[3], params[5]]])
-    return np.dot(W,p)
+    #params is a column vector
+    p = np.append(pt,1) 
+    W = np.array([[1+params[0,0], params[2,0], params[4,0]],
+                  [params[1,0], 1+params[3,0], params[5,0]]])
+    return np.dot(W,p).astype(int)
 
 def warpROI(I,rect,params):
     minX = np.min(rect[:,0])
@@ -43,21 +44,35 @@ def warpROI(I,rect,params):
     return wI 
 
 def affineLKtracker(T,I,rect,p_prev):
-    wI = warpROI(T,rect,p_prev)  
+    for i in range(20):
+        wI = warpROI(T,rect,p_prev)  
 
-    # difference between image
-    error = np.subtract(T,wI)
-    
-    #compute gradient
-    Ix = cv2.Sobel(wI,cv2.CV_64F,1,0,ksize=5)
-    Iy = cv2.Sobel(wI,cv2.CV_64F,0,1,ksize=5)
-    gradientI = np.column_stack((Ix,Iy))
-   
-
-
-
-
-
+        # difference between image
+        error = np.subtract(T,wI)
+        
+        #compute gradient
+        Ix = cv2.Sobel(wI,cv2.CV_64F,1,0,ksize=5)
+        Iy = cv2.Sobel(wI,cv2.CV_64F,0,1,ksize=5)
+      
+        minX = np.min(rect[:,0])
+        minY = np.min(rect[:,1])
+        maxX = np.max(rect[:,0])
+        maxY = np.max(rect[:,1])
+        
+        wI = np.zeros((I.shape),dtype=np.uint8)
+        result = np.zeros((6,1))
+        H = np.zeros((6,6))
+        for i in range(minY,maxY):
+            for j in range(minX,maxX):
+                gradient = np.array([Ix[i,j],Iy[i,j]]).reshape(1,2)
+                dW = derivativeaffineWarp([i,j])
+                gradientDw = np.dot(gradient,dW)
+                result += np.dot(gradientDw.T,error[i,j])
+                H += np.dot(gradientDw.T,gradientDw) 
+       
+        dp = np.dot(np.linalg.inv(H),result)
+        p_prev += dp
+    return p_prev
 
 
     # img = cv2.rectangle(T, (266, 80), (307, 143), (255, 0, 0), 2)
@@ -65,8 +80,6 @@ def affineLKtracker(T,I,rect,p_prev):
     # cv2.imshow("image2",wI)
     # if cv2.waitKey(0) & 0xFF == ord('q'):
             # cv2.destroyAllWindows()
-  
-    
 
 def main():
     path = "Data/Bolt2/img"
@@ -76,9 +89,8 @@ def main():
     It1 = cv2.imread("Data/Bolt2/img/0002.jpg",0)
 
     rect_roi = np.array([(266, 80), (307, 143)])
-    p_initial = [0,0,0,0,0,0]
+    p_initial = np.array([0.0,0.0,0.0,0.0,0.0,0.0]).reshape(6,1)
     print(affineLKtracker(It0,It1,rect_roi,p_initial))
-     
 
     #template
     # template = img[80:143, 266:307]
