@@ -4,7 +4,6 @@ import glob
 from matplotlib import pyplot as plt
 import numpy as np
 
-
 def readImages(path):
     img_array = []
     names = []
@@ -31,17 +30,17 @@ def affineWarp(pt,params):
                   [0, 1+params[3,0], params[5,0]]])
     return np.dot(W,p).astype(int)
 
+
 def affineLKtracker(T,I,rect,p_prev):
+    error = np.subtract(T,I)
     Ix = cv2.Sobel(I,cv2.CV_64F,1,0,ksize=7)
     Iy = cv2.Sobel(I,cv2.CV_64F,0,1,ksize=7)
-
     minX = np.min(rect[:,0])
     minY = np.min(rect[:,1])
     maxX = np.max(rect[:,0])
     maxY = np.max(rect[:,1])
 
     for i in range(10):
-
         result = np.zeros((6,1))
         H = np.zeros((6,6))
         for i in range(minY,maxY):
@@ -55,14 +54,10 @@ def affineLKtracker(T,I,rect,p_prev):
 
         dp = np.dot(np.linalg.inv(H),result)
         p_prev += dp
-        # rect[0] = affineWarp(rect[0],p_prev)
-        # rect[1] = affineWarp(rect[1],p_prev)
         if(np.linalg.norm(dp)<= 0.1):
-            print("here")
-            print(p_prev)
+            # print(p_prev)
             return p_prev
     return p_prev
-
 
 def main():
     path = "./Data/Bolt2/img/*.jpg"
@@ -72,6 +67,12 @@ def main():
     for i in range(len(images)-1):
         It0 = images[i]
         It1 = images[i+1] 
+ 
+        # brightness = 0
+        # contrast = 0.5
+        # It0 = cv2.addWeighted(It0, contrast, It0, 0, brightness)
+        # It1 = cv2.addWeighted(It1, contrast, It1, 0, brightness)
+
         p_prev = affineLKtracker(It0,It1,rect_roi,p_prev)
         img1 = cv2.rectangle(It0, tuple(rect_roi[0]), tuple(rect_roi[1]), (255, 0, 0), 2)
 
@@ -86,8 +87,5 @@ def main():
 
 if __name__=="__main__":
     main()
-
-
-
 
 
