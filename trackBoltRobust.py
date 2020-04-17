@@ -16,7 +16,7 @@ def readImages(path):
         img_array.append(img)
     return img_array
 
-def derivativeaffineWarp(pt):
+def jacobian(pt):
     dW = np.array([[pt[0], 0, pt[1], 0, 1, 0],
                    [0, pt[0], 0, pt[1], 0, 1]])
     return dW
@@ -32,7 +32,6 @@ def affineWarp(pt,params):
 
 
 def affineLKtracker(T,I,rect,p_prev):
-    error = np.subtract(T,I)
     Ix = cv2.Sobel(I,cv2.CV_64F,1,0,ksize=7)
     Iy = cv2.Sobel(I,cv2.CV_64F,0,1,ksize=7)
     minX = np.min(rect[:,0])
@@ -43,13 +42,13 @@ def affineLKtracker(T,I,rect,p_prev):
     for i in range(10):
         result = np.zeros((6,1))
         H = np.zeros((6,6))
-        for i in range(minY,maxY):
-            for j in range(minX,maxX):
-                x,y = affineWarp([i,j],p_prev)
-                gradient = np.array([Ix[x,y],Iy[x,y]]).reshape(1,2)
-                dW = derivativeaffineWarp([i,j])
-                gradientDw = np.dot(gradient,dW)
-                result += np.dot(gradientDw.T,T[i,j]-I[x,y])
+        for j in range(minY,maxY):
+            for k in range(minX,maxX):
+                x,y = affineWarp([j,k],p_prev)                       #warp image
+                gradient = np.array([Ix[x,y],Iy[x,y]]).reshape(1,2)  #warp gradient
+                dW = jacobian([j,k])                                 #compute jacobian
+                gradientDw = np.dot(gradient,dW)                     #warp gradient
+                result += np.dot(gradientDw.T,T[j,k]-I[x,y])         #
                 H += np.dot(gradientDw.T,gradientDw) 
 
         dp = np.dot(np.linalg.inv(H),result)

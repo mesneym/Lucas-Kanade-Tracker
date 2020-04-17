@@ -23,13 +23,13 @@ def jacobian(pt):
     return dW
 
 def affineWarp(pt,params):
-    #params is a column vector
     p = np.append(pt,1)
     W = np.array([[1+params[0,0], params[2,0], params[4,0]],
                   [params[1,0], 1+params[3,0], params[5,0]]])
+    W = np.vstack((W,[0,0,1]))
     # W = np.array([[1+params[0,0], 0, params[4,0]],
                   # [0, 1+params[3,0], params[5,0]]])
-    return np.dot(W,p).astype(int)
+    return np.dot(W,p).astype(int)[0:2]
 
 def affineLKtracker(T,I,rect,p_prev):
     Ix = cv2.Sobel(I,cv2.CV_64F,1,0,ksize=7)
@@ -45,16 +45,17 @@ def affineLKtracker(T,I,rect,p_prev):
         for j in range(minY,maxY):
             for k in range(minX,maxX):
                 x,y = affineWarp([j,k],p_prev)                      #warp image points
+                error = T[j,k]-I[x,y]                               #error T(x)-I(w(x,p))
                 gradient = np.array([Ix[x,y],Iy[x,y]]).reshape(1,2) #compute warped gradient
                 dW = jacobian([j,k])                                #compute jacobian
                 gradientDw = np.dot(gradient,dW)                    #compute steepest descent,D
-                result += np.dot(gradientDw.T,T[j,k]-I[x,y])        #compute transpose(D).(T(x)-I(w(x,p)))
+                result += np.dot(gradientDw.T,error)                #compute transpose(D).(T(x)-I(w(x,p)))
                 H += np.dot(gradientDw.T,gradientDw)                #compute hessian matrix  
 
         dp = np.dot(np.linalg.inv(H),result)
         p_prev += dp
+
         if(np.linalg.norm(dp)<= 0.1):
-            print("here")
             print(p_prev)
             return p_prev
     return p_prev
@@ -67,7 +68,7 @@ def main():
     p_prev = np.array([0.0,0.0,0.0,0.0,0.0,0.0]).reshape(6,1)
     for i in range(len(images)-1):
         It0 = images[i]
-        It1 = images[i+1] 
+        It1 = images[i+1]
         img1 = cv2.rectangle(It0, tuple(rect_roi[0]), tuple(rect_roi[1]), (255, 0, 0), 2)
         p_prev = affineLKtracker(It0,It1,rect_roi,p_prev)
 
