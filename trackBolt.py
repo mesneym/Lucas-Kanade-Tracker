@@ -27,8 +27,6 @@ def affineWarp(pt,params):
     W = np.array([[1+params[0,0], params[2,0], params[4,0]],
                   [params[1,0], 1+params[3,0], params[5,0]]])
     W = np.vstack((W,[0,0,1]))
-    # W = np.array([[1+params[0,0], 0, params[4,0]],
-                  # [0, 1+params[3,0], params[5,0]]])
     return np.dot(W,p).astype(int)[0:2]
 
 def affineLKtracker(T,I,rect,p_prev):
@@ -45,7 +43,7 @@ def affineLKtracker(T,I,rect,p_prev):
         for j in range(minY,maxY):
             for k in range(minX,maxX):
                 x,y = affineWarp([j,k],p_prev)                      #warp image points
-                error = T[j,k]-I[x,y]                               #error T(x)-I(w(x,p))
+                error = int(T[j,k])-int(I[x,y])                     #error T(x)-I(w(x,p))
                 gradient = np.array([Ix[x,y],Iy[x,y]]).reshape(1,2) #compute warped gradient
                 dW = jacobian([j,k])                                #compute jacobian
                 gradientDw = np.dot(gradient,dW)                    #compute steepest descent,D
@@ -56,7 +54,6 @@ def affineLKtracker(T,I,rect,p_prev):
         p_prev += dp
 
         if(np.linalg.norm(dp)<= 0.1):
-            print(p_prev)
             return p_prev
     return p_prev
 
@@ -79,7 +76,8 @@ def main():
         cv2.imshow('image1',img1)
         cv2.imshow('image2',img2)
         if cv2.waitKey(0) & 0xFF == ord('q'):
-            cv2.destroyAllWindows()
+            break;
+            # cv2.destroyAllWindows()
 
 if __name__=="__main__":
     main()
