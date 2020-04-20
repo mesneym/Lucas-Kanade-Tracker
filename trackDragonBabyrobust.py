@@ -40,13 +40,49 @@ def extractWarpedROI(img, p_prev, rect):
     return I
 
 
+# def Correction(T,img):
+# Tmean = np.mean(T)
+# iMean = np.mean(img)
+
+# if(abs(Tmean - imean)< 2)):
+# return img
+# elif((Tmean-imean)<10):
+
+def zScore(Tmean, img, thresh):
+    Tmeanmat = np.zeros_like(img)
+    Tmeanmat[0:img.shape[0], 0:img.shape[1]] = Tmean
+    img_mean_matrix = np.zeros_like(img)
+    img_mean_matrix[0:img.shape[0], 0:img.shape[1]] = np.mean(img)
+    standardDevi = np.std(img)
+    ZscoreTemp = img - Tmeanmat
+    Zscore = ZscoreTemp / standardDevi
+
+    if np.mean(img) - Tmean < thresh:
+        imgshift = -(Zscore * standardDevi) + img_mean_matrix
+
+    else:
+        imgshift = (Zscore * standardDevi) + img_mean_matrix
+
+    return imgshift.astype(dtype=np.uint8)
+
+
+def gammaCorrection(frame, gamma=1.0):
+    newPixel = np.zeros(256, np.uint8)
+    for i in range(256):
+        newPixel[i] = np.clip(pow(i / 255.0, gamma) * 255.0, 0, 255)
+    frame = newPixel[frame]
+    return frame
+
+
 def affineLKtracker(T, img, rect, p_prev):
     oIx = cv2.Sobel(img, cv2.CV_64F, 1, 0, ksize=5)
     oIy = cv2.Sobel(img, cv2.CV_64F, 0, 1, ksize=5)
-    d_prev = [0]
+
     for i in range(1000):
         H = np.zeros((6, 6))
         I = extractWarpedROI(img, p_prev, rect)  # Warped Image ROI
+        # I = gammaCorrection(I, 2)  # Correcting image
+        I = zScore(np.mean(T), I, 10)
         Ix = extractWarpedROI(oIx, p_prev, rect)  # Warped gradient,Ix ROI
         Iy = extractWarpedROI(oIy, p_prev, rect)  # Warped gradient,Iy ROI
 
@@ -61,7 +97,7 @@ def affineLKtracker(T, img, rect, p_prev):
         # gradientDw = np.dot(gradient,dW)                    #compute steepest descent,D
         # R += np.dot(gradientDw.T,error[j,k])                #compute transpose(D).(T(x)-I(w(x,p))),R
         # H += np.dot(gradientDw.T,gradientDw)                #compute hessian matrix
-        # dp = np.dot(np.linalg.inv(H),R)                             #get change in p
+        # dp = np.dot(np.linalg.inv(H),R)                     #get change in p
 
         # uncomment to use meshgrid
         error = (T.astype(int) - I.astype(int)).reshape(-1, 1)  # computing T(x)- I(w(x,p))
@@ -76,16 +112,14 @@ def affineLKtracker(T, img, rect, p_prev):
             R[i] = np.dot(gradient, dW).reshape(1, -1)
 
         H = R.T @ R
-
         dp = np.linalg.inv(H) @ R.T @ error
-        d_prev.pop()
-        d_prev.append(dp)
         # ----
+
         p_prev = p_prev.reshape(6, 1)  # change p_prev to a vector
         p_prev += 500 * dp  # update change in p_prev
         p_prev = p_prev.reshape(6, )  # convert p_prev back to array
-        print(np.linalg.norm(dp))
-        if np.linalg.norm(dp) <= 0.1:
+
+        if np.linalg.norm(dp) <= 0.03:
             return p_prev
     return p_prev
 
@@ -94,10 +128,9 @@ def main():
     path = "./Data/DragonBaby/img/*.jpg"
     images, cimages = readImages(path)
     fourcc = cv2.VideoWriter_fourcc(*'XVID')
-    out = cv2.VideoWriter('trackdragonbaby.avi', fourcc, 5.0, (images[0].shape[1], images[0].shape[0]))
-    # rect_roi = np.array([(156, 68), (214, 146)])
+    out = cv2.VideoWriter('trackdragonbabyrobust.avi', fourcc, 5.0, (images[0].shape[1], images[0].shape[0]))
     rect_roi = np.array([(132, 68), (204, 138)])
-    template = images[12][rect_roi[0][1]:rect_roi[1][1], rect_roi[0][0]:rect_roi[1][0]]
+    template = images[0][rect_roi[0][1]:rect_roi[1][1], rect_roi[0][0]:rect_roi[1][0]]
     p_prev = np.zeros(6)
     for i in range(1, len(images)):
         It = images[i]
@@ -106,15 +139,10 @@ def main():
         M = np.vstack((affineMatrix(p_prev), [0, 0, 1]))  # get new rect coordinates
         x1, y1 = M.dot(np.append(rect_roi[0], 1))[0:2]
         x2, y2 = M.dot(np.append(rect_roi[1], 1))[0:2]
-        # tl = [132, 68]
-        # tr = [132, 138]
-        # bl = [204, 68]
-        # br = [204, 138]
-        #
+
         img = cv2.rectangle(cimages[i], (int(x1), int(y1)), (int(x2), int(y2)), (255, 0, 0), 2)
+        cv2.imshow('image1', img)
         out.write(img)
-        # img = cv2.rectangle(images[13], (132, 68), (204, 138), (255, 0, 0), 2)
-        cv2.imshow('image', img)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break;
     out.release()
