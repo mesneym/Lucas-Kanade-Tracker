@@ -10,7 +10,11 @@ To initialize the tracker, We define a template by drawing a bounding box around
 
 Enter the following to run the code.
 
-For bolt:
+For Bolt:
 ```
 python3 trackBolt.py
+```
+For car:
+```
+python3 trackCar.py
 ```
