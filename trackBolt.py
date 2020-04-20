@@ -7,15 +7,18 @@ import numpy as np
 
 def readImages(path):
     img_array = []
+    imgc = []
     names = []
     for filename in glob.glob(path):
         names.append(filename)
     names.sort()
 
     for filename in names:
-        img = cv2.imread(filename,0)
+        img = cv2.imread(filename, 0)
+        img1 = cv2.imread(filename)
         img_array.append(img)
-    return img_array
+        imgc.append(img1)
+    return img_array, imgc
 
 def jacobian(pt):
     dW = np.array([[pt[0], 0, pt[1], 0, 1, 0],
@@ -60,7 +63,9 @@ def affineLKtracker(T,I,rect,p_prev):
 
 def main():
     path = "./Data/Bolt2/img/*.jpg"
-    images = readImages(path)
+    images, cimages = readImages(path)
+    fourcc = cv2.VideoWriter_fourcc(*'XVID')
+    out = cv2.VideoWriter('trackbolt2.avi', fourcc, 5.0, (images[0].shape[1], images[0].shape[0]))
     rect_roi = np.array([(266, 80), (307, 143)])
     p_prev = np.array([0.0,0.0,0.0,0.0,0.0,0.0]).reshape(6,1)
     for i in range(len(images)-1):
@@ -71,11 +76,11 @@ def main():
 
         rect_roi[0] = affineWarp(rect_roi[0],p_prev)
         rect_roi[1] = affineWarp(rect_roi[1],p_prev)
-        img2 = cv2.rectangle(It1, tuple(rect_roi[0]), tuple(rect_roi[1]), (255, 0, 0), 2)
+        img2 = cv2.rectangle(cimages[i], tuple(rect_roi[0]), tuple(rect_roi[1]), (255, 0, 0), 2)
 
         cv2.imshow('image1',img1)
         cv2.imshow('image2',img2)
-        if cv2.waitKey(0) & 0xFF == ord('q'):
+        if cv2.waitKey(1) & 0xFF == ord('q'):
             break;
             # cv2.destroyAllWindows()
 
