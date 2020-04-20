@@ -1,6 +1,6 @@
 \documentclass[12pt]{article}
 \usepackage[english]{babel}
-\usepackage{subcaption}
+%\usepackage{subcaption}
 \usepackage{hyperref}
 \usepackage{graphicx}
 \usepackage{amsmath}
@@ -161,6 +161,13 @@ The figure below summarizes the algorithm:
     \label{fig:Tracking Baby}
 \end{figure}
 \section{Evaluation of the tracker}
+Since a taylor approximation is being used, the tracker will work best when 
+\begin{enumerate}
+  \item Approximation made is close to the template- This means when the object moves really fast in successive frames, the errors induced in the taylor approximation becomes huges and the tracker breaks down.
+  \item Brightness of the tracked object remains the same as that of the template 
+\end{enumerate}
+
+\textbf{Car tracker} -
 The tracker breaks down in the case of car video because the intensity of the frame in the video changes continuously. In the case of the car video, when the car goes into the shadow, the tracker looses the car because the intensity level changes drastically between frames. 
 \begin{figure}[h]
     \centering
@@ -168,9 +175,18 @@ The tracker breaks down in the case of car video because the intensity of the fr
     \caption{Tracking error}
     \label{fig:Tracking error}
 \end{figure}
+
+\textbf{Baby tracker}-
+The tracker breaks down for the baby as the change is successive frames is slightly big.The baby is just as fast or probably 
+faster than usian bolt. \\
+
+\textbf{Usian tracker}-
+The tracker breaks for usian bolt as the template used in the first frame(\textbf{usian bolt in a crouched position})is not the same as the template used in successive frames(\textbf{usian bolt in upright}). Template correction-that is, update template with next frame- can be applied but the downside is that if an error is made, it propagates and affects the remaining frames.
+
+In all Usian bolt tracking is the best compared to the others as the shift in successive frames is fairly small and the brightness remains constant.
+
 \section{Robustness to Illumination}
 In order to increase the robustness of the tracker, we need to scale the brightness of pixels in each frame so that the average brightness of pixels in the tracked region stays the same as the average brightness of pixels in the template. This can be done by gamma correction.
-
 After increasing the intensity of the frames in the video the following results we re obtained:
 \begin{figure}[h]
     \centering
@@ -186,8 +202,6 @@ After increasing the intensity of the frames in the video the following results 
     \label{fig:Tracking error}
 \end{figure}
 
-\section{Challenges Faced:}
-Of course, Tweaking.
 \section{Team Members:}
 1. Eashwar Sathyamurthy
 2. Akwasi A Obeng
