@@ -116,10 +116,11 @@ def affineLKtracker(T, img, rect, p_prev):
         # ----
 
         p_prev = p_prev.reshape(6, 1)  # change p_prev to a vector
-        p_prev += 120 * dp  # update change in p_prev
+        p_prev[0:4] +=  80* dp[0:4]  # update change in p_prev
+        p_prev[4:6] += 200 * dp[4:6]  # update change in p_prev
         p_prev = p_prev.reshape(6, )  # convert p_prev back to array
 
-        if np.linalg.norm(dp) <= 0.5:
+        if np.linalg.norm(dp) <= 0.1:
             return p_prev
     return p_prev
 
