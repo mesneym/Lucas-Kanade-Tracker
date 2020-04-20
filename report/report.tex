@@ -180,6 +180,20 @@ The tracker breaks down in the case of car video because the intensity of the fr
 The tracker breaks down for the baby as the change is successive frames is slightly big.The baby is just as fast or probably 
 faster than usian bolt. \\
 
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=12cm]{trackbaby4}
+    \caption{Tracking error}
+    \label{fig:Tracking error}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=12cm]{trackbaby5}
+    \caption{Tracking error}
+    \label{fig:Tracking error}
+\end{figure}
+
 \textbf{Usian tracker}-
 The tracker breaks for usian bolt as the template used in the first frame(\textbf{usian bolt in a crouched position})is not the same as the template used in successive frames(\textbf{usian bolt in upright}). Template correction-that is, update template with next frame- can be applied but the downside is that if an error is made, it propagates and affects the remaining frames.
 
@@ -187,20 +201,62 @@ In all Usian bolt tracking is the best compared to the others as the shift in su
 
 \section{Robustness to Illumination}
 In order to increase the robustness of the tracker, we need to scale the brightness of pixels in each frame so that the average brightness of pixels in the tracked region stays the same as the average brightness of pixels in the template. This can be done by gamma correction.
-After increasing the intensity of the frames in the video the following results we re obtained:
+After increasing the intensity of the frames in the video the following results we re obtained:\\
+\textbf{Usian tracker}
 \begin{figure}[h]
     \centering
-    \includegraphics[width=11cm]{trackcar4}
-    \caption{Tracking error}
-    \label{fig:Tracking error}
+    \includegraphics[width=12cm]{boltwithoutgammaa}
+    \caption{Tracking without gamma correction}
+    \label{fig:Tracking without gamma correction}
 \end{figure}
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=11cm]{trackcar5}
-    \caption{Tracking error}
-    \label{fig:Tracking error}
+    \includegraphics[width=12cm]{boltwithgammaa}
+    \caption{Tracking with gamma correction}
+    \label{fig:Tracking with gamma correction}
 \end{figure}
+
+\textbf{Car tracker}: For tracking the car, gamma correction did not give better results. So, instead we employed z-scores method for tracking. In z-scores, the mean of template image and current frame are checked. So, pixels values in the current frame is changed by a certain z-score relative to the mean of the template. 
+\begin{enumerate}
+\item First the standard deviation of the all the frames of the video are computed w.r.t to the mean of the frames.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=6cm]{zscore}
+    \caption{Standard Deviation}
+    \label{fig:Standard Deviation}
+\end{figure}
+\newpage
+\item Then the z-scores are computed. Z-scores is a measure of how far is the pixel value from the mean of the template in terms of standard deviation of the frames.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=8cm]{zscore1}
+    \caption{Z-score formula}
+    \label{fig:Z- score formula}
+\end{figure}
+\item Finally, we shift every pixel in the frame based on z-score.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=6cm]{zscore2}
+    \caption{Updated pixels formula}
+    \label{fig:Updated pixels formula}
+\end{figure}1
+\end{enumerate}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=11cm]{trackcar4}
+    \caption{Tracking with z-scores}
+    \label{fig:Tracking with z-scores}
+\end{figure}
+\newpage
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=11cm]{trackcar5}
+    \caption{Tracking with z-scores}
+    \label{fig:Tracking with z-scores}
+\end{figure}
+\textbf{Baby tracker}:
 
 \section{Team Members:}
 1. Eashwar Sathyamurthy
