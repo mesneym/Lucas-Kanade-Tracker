@@ -48,18 +48,20 @@ def extractWarpedROI(img, p_prev, rect):
 # return img
 # elif((Tmean-imean)<10):
 
-def zScore(Tmean, img):
-    Tmeanmat = np.full(img.shape, Tmean)
-    img_mean_matrix = np.full(img.shape, np.mean(img))
-    std_ = np.std(img)
-    z_score = np.true_divide((img.astype(int) - Tmeanmat.astype(int)), std_)
-    dmean = np.mean(img) - Tmean
+def zScore(Tmean, img, thresh):
+    Tmeanmat = np.zeros_like(img)
+    Tmeanmat[0:img.shape[0], 0:img.shape[1]] = Tmean
+    img_mean_matrix = np.zeros_like(img)
+    img_mean_matrix[0:img.shape[0], 0:img.shape[1]] = np.mean(img)
+    standardDevi = np.std(img)
+    ZscoreTemp = img - Tmeanmat
+    Zscore = ZscoreTemp/standardDevi
 
-    if dmean < 10:
-        imgshift = -(z_score * std_).astype(int) + img_mean_matrix.astype(int)
+    if np.mean(img) - Tmean < thresh:
+        imgshift = -(Zscore * standardDevi) + img_mean_matrix
 
     else:
-        imgshift = (z_score * std_).astype(int) + img_mean_matrix.astype(int)
+        imgshift = (Zscore * standardDevi) + img_mean_matrix
         
     return imgshift.astype(dtype=np.uint8)
 
@@ -80,7 +82,7 @@ def affineLKtracker(T, img, rect, p_prev):
         H = np.zeros((6, 6))
         I = extractWarpedROI(img, p_prev, rect)  # Warped Image ROI
         # I = gammaCorrection(I, 2)  # Correcting image
-        I = zScore(np.mean(T), I)
+        I = zScore(np.mean(T), I, 20)
         Ix = extractWarpedROI(oIx, p_prev, rect)  # Warped gradient,Ix ROI
         Iy = extractWarpedROI(oIy, p_prev, rect)  # Warped gradient,Iy ROI
 
@@ -114,10 +116,10 @@ def affineLKtracker(T, img, rect, p_prev):
         # ----
 
         p_prev = p_prev.reshape(6, 1)  # change p_prev to a vector
-        p_prev += 100 * dp  # update change in p_prev
+        p_prev += 120 * dp  # update change in p_prev
         p_prev = p_prev.reshape(6, )  # convert p_prev back to array
 
-        if np.linalg.norm(dp) <= 0.8:
+        if np.linalg.norm(dp) <= 0.5:
             return p_prev
     return p_prev
 
