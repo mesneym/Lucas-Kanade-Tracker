@@ -6,3 +6,11 @@ The aim of this project is to implement the Lucas-Kanade (LK) template tracker. 
 
 
 To initialize the tracker, We define a template by drawing a bounding box around the object to be tracked in the first frame of the video. For each of the subsequent frames the tracker will update an affine transform that warps the current frame so that the template in the first frame is aligned with the warped current frame.
+# Run the code
+
+Enter the following to run the code.
+
+For bolt:
+```
+python3 trackBolt.py
+```
