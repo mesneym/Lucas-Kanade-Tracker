@@ -1,0 +1,10 @@
+\BOOKMARK [1][-]{section.1}{Implementation of Lucas-Kanade \(LK\) template tracker}{}% 1
+\BOOKMARK [2][-]{subsection.1.1}{Introduction}{section.1}% 2
+\BOOKMARK [2][-]{subsection.1.2}{Lucas Kanade Algorithm}{section.1}% 3
+\BOOKMARK [2][-]{subsection.1.3}{Pipeline followed}{section.1}% 4
+\BOOKMARK [1][-]{section.2}{Output images by implementing Lucas Kanade}{}% 5
+\BOOKMARK [2][-]{subsection.2.1}{Tracking Bolt}{section.2}% 6
+\BOOKMARK [1][-]{section.3}{Evaluation of the tracker}{}% 7
+\BOOKMARK [1][-]{section.4}{Robustness to Illumination}{}% 8
+\BOOKMARK [1][-]{section.5}{Team Members:}{}% 9
+\BOOKMARK [1][-]{section.6}{Output Videos:}{}% 10
