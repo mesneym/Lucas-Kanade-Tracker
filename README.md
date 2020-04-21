@@ -25,3 +25,6 @@ python3 trackDragonbaby.py
 
 
 ![3xgj1r](https://user-images.githubusercontent.com/55011289/79813555-fb49f200-8349-11ea-9a86-f0db137c8a59.gif)
+
+![3xgje8](https://user-images.githubusercontent.com/55011289/79813700-5c71c580-834a-11ea-8566-ec8e4c476efd.gif)
+
