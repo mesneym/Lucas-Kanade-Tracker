@@ -213,12 +213,12 @@ In all Usian bolt tracking is the best compared to the others as the shift in su
 \end{figure}
 
 \section{Robustness to Illumination}
-In order to increase the robustness of the tracker, we need to scale the brightness of pixels in each frame so that the average brightness of pixels in the tracked region stays the same as the average brightness of pixels in the template. This can be done by gamma correction.
-After increasing the intensity of the frames in the video the following results we re obtained:\\
+In order to increase the robustness of the tracker, we need to scale the brightness of pixels in each frame so that the average brightness of pixels in the tracked region stays the same as the average brightness of pixels in the template. 
 
 \textbf{Car tracker}: For tracking the car, gamma correction did not give better results. So, instead we employed z-scores method for tracking. In z-scores, the mean of template image and current frame are checked. So, pixels values in the current frame is changed by a certain z-score relative to the mean of the template. 
 \begin{enumerate}
 \item First the standard deviation of the all the frames of the video are computed w.r.t to the mean of the frames.
+\newpage
 \begin{figure}[h]
     \centering
     \includegraphics[width=6cm]{zscore}
@@ -241,7 +241,7 @@ After increasing the intensity of the frames in the video the following results 
 \end{figure}
 \end{enumerate}
 The following are the improved output after employing z-scores:
-\newpage
+
 \begin{figure}[h]
     \centering
     \includegraphics[width=11cm]{trackcar4}
@@ -254,12 +254,15 @@ The following are the improved output after employing z-scores:
     \caption{Tracking with z-scores}
     \label{fig:Tracking with z-scores}
 \end{figure}
-
+\newpage
 \section{Team Members:}
 1. Eashwar Sathyamurthy
 2. Akwasi A Obeng
 3. Achal P Vyas
 \section{Output Videos:}
 To access output videos please use this \href{https://drive.google.com/drive/folders/1nbAUx-p-eyOWts9neJgAPA8YATY4ekmI?usp=sharing}{\underline{link}}.
+
+\section{References}
+\href{https://www.statisticshowto.com/probability-and-statistics/z-score/}{\underline{Z-score}}.
 
 \end{document}
