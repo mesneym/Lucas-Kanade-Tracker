@@ -202,20 +202,6 @@ In all Usian bolt tracking is the best compared to the others as the shift in su
 \section{Robustness to Illumination}
 In order to increase the robustness of the tracker, we need to scale the brightness of pixels in each frame so that the average brightness of pixels in the tracked region stays the same as the average brightness of pixels in the template. This can be done by gamma correction.
 After increasing the intensity of the frames in the video the following results we re obtained:\\
-\textbf{Usian tracker}
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=12cm]{boltwithoutgammaa}
-    \caption{Tracking without gamma correction}
-    \label{fig:Tracking without gamma correction}
-\end{figure}
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=12cm]{boltwithgammaa}
-    \caption{Tracking with gamma correction}
-    \label{fig:Tracking with gamma correction}
-\end{figure}
 
 \textbf{Car tracker}: For tracking the car, gamma correction did not give better results. So, instead we employed z-scores method for tracking. In z-scores, the mean of template image and current frame are checked. So, pixels values in the current frame is changed by a certain z-score relative to the mean of the template. 
 \begin{enumerate}
@@ -226,7 +212,6 @@ After increasing the intensity of the frames in the video the following results 
     \caption{Standard Deviation}
     \label{fig:Standard Deviation}
 \end{figure}
-\newpage
 \item Then the z-scores are computed. Z-scores is a measure of how far is the pixel value from the mean of the template in terms of standard deviation of the frames.
 \begin{figure}[h]
     \centering
@@ -240,23 +225,22 @@ After increasing the intensity of the frames in the video the following results 
     \includegraphics[width=6cm]{zscore2}
     \caption{Updated pixels formula}
     \label{fig:Updated pixels formula}
-\end{figure}1
+\end{figure}
 \end{enumerate}
-
+The following are the improved output after employing z-scores:
+\newpage
 \begin{figure}[h]
     \centering
     \includegraphics[width=11cm]{trackcar4}
     \caption{Tracking with z-scores}
     \label{fig:Tracking with z-scores}
 \end{figure}
-\newpage
 \begin{figure}[h]
     \centering
     \includegraphics[width=11cm]{trackcar5}
     \caption{Tracking with z-scores}
     \label{fig:Tracking with z-scores}
 \end{figure}
-\textbf{Baby tracker}:
 
 \section{Team Members:}
 1. Eashwar Sathyamurthy
