@@ -198,6 +198,19 @@ faster than usian bolt. \\
 The tracker breaks for usian bolt as the template used in the first frame(\textbf{usian bolt in a crouched position})is not the same as the template used in successive frames(\textbf{usian bolt in upright}). Template correction-that is, update template with next frame- can be applied but the downside is that if an error is made, it propagates and affects the remaining frames.
 
 In all Usian bolt tracking is the best compared to the others as the shift in successive frames is fairly small and the brightness remains constant.
+\newpage
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=12cm]{trackbolt3}
+    \caption{Bolt in crouched position}
+    \label{fig:Bolt in crouched position}
+\end{figure}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=12cm]{trackbolt4}
+    \caption{Tracking error in upright position}
+    \label{fig:Tracking error in upright position}
+\end{figure}
 
 \section{Robustness to Illumination}
 In order to increase the robustness of the tracker, we need to scale the brightness of pixels in each frame so that the average brightness of pixels in the tracked region stays the same as the average brightness of pixels in the template. This can be done by gamma correction.
