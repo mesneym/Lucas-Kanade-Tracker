@@ -97,10 +97,10 @@ def affineLKtracker(T, img, rect, p_prev):
         # gradientDw = np.dot(gradient,dW)                    #compute steepest descent,D
         # R += np.dot(gradientDw.T,error[j,k])                #compute transpose(D).(T(x)-I(w(x,p))),R
         # H += np.dot(gradientDw.T,gradientDw)                #compute hessian matrix
-        # dp = np.dot(np.linalg.inv(H),R)                             #get change in p
+        # dp = np.dot(np.linalg.inv(H),R)                     #get change in p
 
         # uncomment to use meshgrid
-        error = (T.astype(int) - I.astype(int)).reshape(-1, 1)  # computing T(x)- I(w(x,p))
+        error = (T.astype(int) - I.astype(int)).reshape(-1, 1)    # computing T(x)- I(w(x,p))
         R = np.zeros((T.shape[0] * T.shape[1], 6))
         x, y = np.meshgrid(range(T.shape[1]), range(T.shape[0]))
         x = x.reshape(-1, 1)
@@ -116,9 +116,9 @@ def affineLKtracker(T, img, rect, p_prev):
         # ----
 
         p_prev = p_prev.reshape(6, 1)  # change p_prev to a vector
-        p_prev[0:4] +=  80* dp[0:4]  # update change in p_prev
-        p_prev[4:6] += 200 * dp[4:6]  # update change in p_prev
-        p_prev = p_prev.reshape(6, )  # convert p_prev back to array
+        p_prev[0:4] +=  80* dp[0:4]    # update change in p_prev
+        p_prev[4:6] += 200 * dp[4:6]  
+        p_prev = p_prev.reshape(6, )   # convert p_prev back to array
 
         if np.linalg.norm(dp) <= 0.1:
             return p_prev
