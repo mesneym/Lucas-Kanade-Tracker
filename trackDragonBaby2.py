@@ -82,7 +82,9 @@ def affineLKtracker(T, img, rect, p_prev):
         d_prev.append(dp)
         # ----
         p_prev = p_prev.reshape(6, 1)  # change p_prev to a vector
-        p_prev += 500 * dp  # update change in p_prev
+        # p_prev += 500 * dp  # update change in p_prev
+        p_prev[0:4] += dp[0:4]  # update change in p_prev
+        p_prev[4:6] += 600 * dp[4:6]  # update change in p_prev
         p_prev = p_prev.reshape(6, )  # convert p_prev back to array
         print(np.linalg.norm(dp))
         if np.linalg.norm(dp) <= 0.1:
@@ -95,9 +97,9 @@ def main():
     images, cimages = readImages(path)
     fourcc = cv2.VideoWriter_fourcc(*'XVID')
     out = cv2.VideoWriter('trackdragonbaby.avi', fourcc, 5.0, (images[0].shape[1], images[0].shape[0]))
-    # rect_roi = np.array([(156, 68), (214, 146)])
-    rect_roi = np.array([(132, 68), (204, 138)])
-    template = images[12][rect_roi[0][1]:rect_roi[1][1], rect_roi[0][0]:rect_roi[1][0]]
+    rect_roi = np.array([(156, 68), (214, 146)])
+    # rect_roi = np.array([(132, 68), (204, 138)])
+    template = images[0][rect_roi[0][1]:rect_roi[1][1], rect_roi[0][0]:rect_roi[1][0]]
     p_prev = np.zeros(6)
     for i in range(1, len(images)):
         It = images[i]
